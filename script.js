@@ -1,8 +1,8 @@
 var canvas = new fabric.Canvas('myConvas', {
-    height: 600,
-    width: 600
+    height: window.innerHeight,
+    width: window.innerWidth   
 });
-
+console.log(window.innerHeight);
 var position = {
 
     firstClickPositionX: 0,
@@ -25,14 +25,14 @@ var position = {
         if (!position.isEventOn)
             position.Events();
         document.oncontextmenu = function (e) {
-            if (position.isCursorOnEl)
-                canvas.setActiveObject(canvas.item(canvas.getObjects().indexOf(position.cursorOnElElemetObj)));
-            else
-                canvas.deactivateAll().renderAll();
+            // if (position.isCursorOnEl)
+            //     canvas.setActiveObject(canvas.item(canvas.getObjects().indexOf(position.cursorOnElElemetObj)));
+            // else
+            //     canvas.deactivateAll().renderAll();
             position.ShowCanvasMenu(e); // меню: показать
             return false;
         }
-        // position.GridDrawing(); // проприсовка сетки
+        position.GridDrawing(); // проприсовка сетки
 
     },
     Events: function () {
@@ -47,9 +47,8 @@ var position = {
             if (o.target) {
                 position.cursorOnElElemetObj = o.target;
                 position.isCursorOnEl = true;
-                // position.cursorOnElElemetHeight = o.target.height;
-                // position.cursorOnElElemetWidth = o.target.cacheWidth;
-                // 
+                position.cursorOnElElemetHeight = o.target.height;
+                position.cursorOnElElemetWidth = o.target.cacheWidth;
             }
             else
                 position.isCursorOnEl = false;
@@ -120,20 +119,20 @@ var position = {
     },
     ShowCanvasMenu: function (e) { // меню: показать
         if (!position.isCursorOnEl) {
-            // convasContextMenu.style.display = "block";
-            // convasContextMenu.style.top = e.clientY + 'px';
-            // convasContextMenu.style.left = e.clientX + 'px';
-            // convasElContextMenu.style.display = "none";
+            convasContextMenu.style.display = "block";
+            convasContextMenu.style.top = e.clientY + 'px';
+            convasContextMenu.style.left = e.clientX + 'px';
+            convasElContextMenu.style.display = "none";
         } else {
-            // convasElContextMenu.style.display = "block";
-            // convasElContextMenu.style.top = e.clientY + 'px';
-            // convasElContextMenu.style.left = e.clientX + 'px';
-            // convasContextMenu.style.display = "none";
+            convasElContextMenu.style.display = "block";
+            convasElContextMenu.style.top = e.clientY + 'px';
+            convasElContextMenu.style.left = e.clientX + 'px';
+            convasContextMenu.style.display = "none";
         }
     },
     HideCanvasMenu: function () { // меню: скрыть
-        // convasElContextMenu.style.display = "none";
-        // convasContextMenu.style.display = "none";
+        convasElContextMenu.style.display = "none";
+        convasContextMenu.style.display = "none";
     },
     SetDataToCanvasMenu: function (evt) { // меню: установка занчений
         if (position.drawingType == "rect") {
@@ -142,11 +141,16 @@ var position = {
             document.getElementById("radiusElInput").disabled = true;
             document.getElementById("heightElInput").value = parseInt(evt.target.getHeight());
             document.getElementById("widthElInput").value = parseInt(evt.target.getWidth());
+
+      
         } else if (position.drawingType == "circle") {
             document.getElementById("widthElInput").disabled = true;
             document.getElementById("heightElInput").disabled = true;
             document.getElementById("radiusElInput").disabled = false;
             document.getElementById("radiusElInput").value = parseInt(evt.target.getWidth() / 2);
+
+
+                  document.getElementById("areaElInput").value = 999;
         } else if (position.drawingType == "triangle") {
             document.getElementById("widthElInput").disabled = false;
             document.getElementById("heightElInput").disabled = false;
@@ -229,8 +233,7 @@ var position = {
         }
     },
     // удалить полотно
-    // групп
-    Group: function () {
+    Group: function () { // группы: создать
         var activegroup = canvas.getActiveGroup();
         var objectsInGroup = activegroup.getObjects();
         activegroup.clone(function (newgroup) {
@@ -241,20 +244,19 @@ var position = {
             canvas.add(newgroup);
         });
     },
-    Ungroup: function () {
+    Ungroup: function () { // группы: удалить
         var activeObject = canvas.getActiveObject();
         if (activeObject.type == "group") {
             var items = activeObject._objects;
             activeObject._restoreObjectsState();
             canvas.remove(activeObject);
-            for (var i = 0; i < items.length; i++) {
+            for (var i = 2; i < items.length; i++) {
                 canvas.add(items[i]);
                 canvas.item(canvas.size() - 1).hasControls = true;
             }
             canvas.renderAll();
         }
     },
-    // групп
     BlocksMagnet: function (targ) { // примагничивание блоков
         activeObject = canvas.getActiveObject();
         if (targ === activeObject || activeObject.angle != 0 || targ.angle != 0) return;
@@ -286,9 +288,17 @@ var position = {
     },
     GridDrawing: function () { // проприсовка сетки
         var grid = 20;
-        for (var i = 0; i < (600 / grid); i++) {
-            canvas.add(new fabric.Line([i * grid, 0, i * grid, 600], { stroke: '#ccc', selectable: false }));
-            canvas.add(new fabric.Line([0, i * grid, 600, i * grid], { stroke: '#ccc', selectable: false }))
+        for (var i = 0; i < (window.innerWidth  / grid); i++) {
+            canvas.add(new fabric.Line([i * grid, 0, i * grid, window.innerWidth ], { 
+                stroke: '#ccc', 
+                selectable: false,
+    
+            }));
+            canvas.add(new fabric.Line([0, i * grid, window.innerWidth , i * grid], { 
+                stroke: '#ccc', 
+                selectable: false,    
+                
+            }))
         }
     }
 }
