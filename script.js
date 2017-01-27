@@ -2,7 +2,6 @@ var canvas = new fabric.Canvas('myConvas', {
     height: window.innerHeight,
     width: window.innerWidth   
 });
-console.log(window.innerHeight);
 var position = {
 
     firstClickPositionX: 0,
@@ -40,6 +39,7 @@ var position = {
 
         canvas.on('object:selected', position.EventObjectSelected);
         canvas.on('object:modified', position.EventObjectModified);
+        canvas.on('object:added', position.EventObjectAdded);
 
         canvas.on('mouse:move', function (o) {
             position.tempX = o.pageX;
@@ -117,7 +117,9 @@ var position = {
     EventObjectSelected: function (e) {
         position.SetDataToCanvasMenu(e); // меню: установка занчений
     },
-    ShowCanvasMenu: function (e) { // меню: показать
+    EventObjectAdded: function (e) {  
+         position.SetDataToCanvasMenu(e); 
+    }, ShowCanvasMenu: function (e) { // меню: показать
         if (!position.isCursorOnEl) {
             convasContextMenu.style.display = "block";
             convasContextMenu.style.top = e.clientY + 'px';
@@ -141,16 +143,13 @@ var position = {
             document.getElementById("radiusElInput").disabled = true;
             document.getElementById("heightElInput").value = parseInt(evt.target.getHeight());
             document.getElementById("widthElInput").value = parseInt(evt.target.getWidth());
-
-      
+            // document.getElementById("areaElInput").value = parseInt(evt.target.getHeight()*evt.target.getWidth()); // площадь 
         } else if (position.drawingType == "circle") {
             document.getElementById("widthElInput").disabled = true;
             document.getElementById("heightElInput").disabled = true;
             document.getElementById("radiusElInput").disabled = false;
             document.getElementById("radiusElInput").value = parseInt(evt.target.getWidth() / 2);
-
-
-                  document.getElementById("areaElInput").value = 999;
+            // document.getElementById("areaElInput").value = parseInt(3.14*(evt.target.getWidth()/2)); // площадь 
         } else if (position.drawingType == "triangle") {
             document.getElementById("widthElInput").disabled = false;
             document.getElementById("heightElInput").disabled = false;
@@ -204,10 +203,6 @@ var position = {
                     scaleY: 1,
                     scaleX: 1
                 });
-                console.log(
-                    Math.abs(position.firstClickPositionX - position.lastClickPositionX),
-                    Math.abs(position.firstClickPositionY - position.lastClickPositionY)
-                    );
                 canvas.add(triangle);
             }
         }
