@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 15.5 12.5" style="enable-background:new 0 0 15.5 12.5;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
+	.st1{fill:#FFFFFF;}
+	#arrow-treget rect{
+		x: 18.8;
+		y: -1;
+		transform: rotate(38.5deg);
+		height: 1.8;
+		width: 0.2;
+		animation: arrow-treget-animation 5s infinite;
+	}
+	@keyframes arrow-treget-animation {
+		0%   	{x: 18.8;}
+		50% 	{x: 9.9;}
+		100% 	{x: 18.8;}
+	}
+</style>
+<rect x="6.9" y="8.1" transform="matrix(0.7819 0.6234 -0.6234 0.7819 8.0492 -5.1448)" class="st0" width="8.9" height="1.6"/>
+<g id="xxxx">
+	<polygon class="st0" points="0.3,0.3 9.7,3.9 5.9,8.7 	"/>
+	<g id="x">
+		
+			<rect x="10.1" y="3.4" transform="matrix(0.6226 -0.7825 0.7825 0.6226 -2.5547 11.6036)" class="st1" width="1.4" height="10.2"/>
+	</g>
+</g>
+<g xmlns="http://www.w3.org/2000/svg" id="arrow-treget"> 
+	<rect x="12.1" y="2.1" class="st3" width="0.2" height="1.8"/> 
+</g>
+</svg>

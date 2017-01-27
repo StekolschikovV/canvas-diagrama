@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?> <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0) --> <svg version="1.1" id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 24.4 6.7" style="enable-background:new 0 0 24.4 6.7;" xml:space="preserve"> <style type="text/css"> .st0 {
+	fill: #FCFCFC;
+	stroke: #000000;
+	stroke-width: 0.25;
+	stroke-miterlimit: 10;
+}
+
+.st1 {
+	fill: #FCFCFC;
+}
+
+.st2 {
+	fill: none;
+	stroke: #000000;
+	stroke-miterlimit: 10;
+}
+
+.st3 {
+	stroke: #000000;
+	stroke-width: 0.25;
+	stroke-miterlimit: 10;
+}
+
+#double-arrow-treget rect{
+	animation: double-arrow-treget-animation 5s infinite;
+}
+@keyframes double-arrow-treget-animation {
+    0%   {x: 7.3;}
+    50% {x: 17;}
+	100% {x: 7.3;}
+}
+</style> <g id="xxx"> <polygon class="st0" points="0.3,3.4 7.3,0.2 7.3,6.5 	"/> <polygon class="st0" points="24.1,3.4 17.2,6.5 17.2,0.2 	"/> <rect x="7.3" y="1.9" class="st1" width="9.9" height="2.5"/> </g> <g id="xx"> <rect x="7" y="2.4" class="st2" width="10.4" height="2"/> </g> <g id="xxxx"> <polygon class="st0" points="0.3,3.4 7.3,0.2 7.3,6.5 	"/> <polygon class="st0" points="24.1,3.4 17.2,6.5 17.2,0.2 	"/> <rect x="7" y="2.1" class="st1" width="10.4" height="2.5"/> </g> <g id="double-arrow-treget"> <rect x="12.1" y="2.1" class="st3" width="0.2" height="2.6"/> </g> </svg>
