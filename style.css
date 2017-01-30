@@ -1,26 +1,38 @@
+* {
+    cursor: none !important;
+}
+
 body, html {
     padding: 0;
     margin: 0;
     width: 100%;
     height: 100%;
-    background-color: #434343;
-    background-image: linear-gradient(#434343, #282828);
+}
+
+#cursor {
+    position: absolute;
+    background: url(arrow.png) no-repeat;
+    width: 25px;
+    height: 25px;
+    pointer-events: none;
+    background-size: contain;
+    z-index: 9999;
 }
 
 #c-container {
     width: 100%;
+    height: 100%;
+    background-color: #f2f2ce;
 }
 
 #myConvas {
-    /*width: 900px;*/
     width: 100%;
-    /*height: 400px;*/
     height: 100vh;
     background: lightgray;
     display: block;
     margin: auto;
     background-color: transparent;
-    background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent);
+    background-image: linear-gradient(0deg, transparent 24%, #95a5a6 25%, #95a5a6 26%, transparent 27%, transparent 74%, #95a5a6 75%, #95a5a6 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, #95a5a6 25%, #95a5a6 26%, transparent 27%, transparent 74%, #95a5a6 75%, #95a5a6 76%, transparent 77%, transparent);
     height: 100%;
     background-size: 50px 50px;
 }
@@ -50,7 +62,6 @@ body, html {
     display: block;
     border: 1px solid #c87114;
     margin-bottom: -1px;
-    cursor: pointer;
     transition-duration: .5s;
 }
 
@@ -64,4 +75,3 @@ body, html {
     margin-left: 5px;
     text-align: center
 }
-
