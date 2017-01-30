@@ -1,6 +1,6 @@
 var canvas = new fabric.Canvas('myConvas', {
     height: window.innerHeight,
-    width: window.innerWidth   
+    width: window.innerWidth
 });
 var position = {
 
@@ -19,20 +19,16 @@ var position = {
     isSelectionMode: false,
     i: 0,
     drawingType: "circle",
+    SelectedObject: "",
 
     Start: function () {
         if (!position.isEventOn)
             position.Events();
         document.oncontextmenu = function (e) {
-            // if (position.isCursorOnEl)
-            //     canvas.setActiveObject(canvas.item(canvas.getObjects().indexOf(position.cursorOnElElemetObj)));
-            // else
-            //     canvas.deactivateAll().renderAll();
             position.ShowCanvasMenu(e); // меню: показать
             return false;
         }
         position.GridDrawing(); // проприсовка сетки
-
     },
     Events: function () {
         position.isEventOn = true;
@@ -40,6 +36,8 @@ var position = {
         canvas.on('object:selected', position.EventObjectSelected);
         canvas.on('object:modified', position.EventObjectModified);
         canvas.on('object:added', position.EventObjectAdded);
+        canvas.on('object:removed', position.EventObjectAdded);
+        canvas.on('object:moving', position.EventObjectMoving);
 
         canvas.on('mouse:move', function (o) {
             position.tempX = o.pageX;
@@ -107,18 +105,21 @@ var position = {
         document.onclick = function () {
             position.HideCanvasMenu(); // меню: скрыть
         };
-        canvas.on('object:moving', function () {
-            canvas.forEachObject(function (targ) { position.BlocksMagnet(targ); }); // примагничивание блоков
-        });
+
     },
-    EventObjectModified: function (e) {
+    EventObjectMoving: function () { // Событие перемещение
+        canvas.forEachObject(function (targ) { position.BlocksMagnet(targ); }); // примагничивание блоков
+    }, EventObjectRemoved: function () { // Событие удаление
+        position.ShowInfo(); // отображение информации
+    }, EventObjectModified: function (e) {  // Событие изменение
         position.SetDataToCanvasMenu(e); // меню: установка занчений
-    },
-    EventObjectSelected: function (e) {
+        position.ShowInfo(); // отображение информации
+    }, EventObjectSelected: function (e) {  // Событие выбор
+        position.SelectedObject = e;
         position.SetDataToCanvasMenu(e); // меню: установка занчений
-    },
-    EventObjectAdded: function (e) {  
-         position.SetDataToCanvasMenu(e); 
+    }, EventObjectAdded: function (e) { // Событие добавление
+        position.SetDataToCanvasMenu(e);
+        position.ShowInfo(); // отображение информации
     }, ShowCanvasMenu: function (e) { // меню: показать
         if (!position.isCursorOnEl) {
             convasContextMenu.style.display = "block";
@@ -132,84 +133,81 @@ var position = {
             convasContextMenu.style.display = "none";
         }
     },
-    HideCanvasMenu: function () { // меню: скрыть
+    ShowInfo: function () { // информация про все элементы
+        canvas.getObjects().map(function (o) {
+            if (o.get('type') != "line") {
+                var id = o.get('id');
+                var type = o.get('type');
+                // console.log(id, type);
+            }
+        });
+    }, HideCanvasMenu: function () { // меню: скрыть
         convasElContextMenu.style.display = "none";
         convasContextMenu.style.display = "none";
     },
     SetDataToCanvasMenu: function (evt) { // меню: установка занчений
+        var activeObject = canvas.getActiveObject();
+        if (activeObject != undefined)
+            if (activeObject.type == "group") {
+                console.log("yes");
+            }
         if (position.drawingType == "rect") {
-            document.getElementById("widthElInput").disabled = false;
-            document.getElementById("heightElInput").disabled = false;
-            document.getElementById("radiusElInput").disabled = true;
             document.getElementById("heightElInput").value = parseInt(evt.target.getHeight());
             document.getElementById("widthElInput").value = parseInt(evt.target.getWidth());
-            // document.getElementById("areaElInput").value = parseInt(evt.target.getHeight()*evt.target.getWidth()); // площадь 
+            document.getElementById("areaElInput").value = parseInt(evt.target.getHeight() * evt.target.getWidth()); // площадь 
         } else if (position.drawingType == "circle") {
-            document.getElementById("widthElInput").disabled = true;
-            document.getElementById("heightElInput").disabled = true;
-            document.getElementById("radiusElInput").disabled = false;
-            document.getElementById("radiusElInput").value = parseInt(evt.target.getWidth() / 2);
-            // document.getElementById("areaElInput").value = parseInt(3.14*(evt.target.getWidth()/2)); // площадь 
-        } else if (position.drawingType == "triangle") {
-            document.getElementById("widthElInput").disabled = false;
-            document.getElementById("heightElInput").disabled = false;
-            document.getElementById("radiusElInput").disabled = true;
             document.getElementById("heightElInput").value = parseInt(evt.target.getHeight());
             document.getElementById("widthElInput").value = parseInt(evt.target.getWidth());
+            if (evt.target.getWidth() == evt.target.getHeight()) {
+                document.getElementById("areaElInput").value = parseInt(3.14 / 4 * (evt.target.getWidth() * evt.target.getWidth())); // площадь круга
+                document.getElementById("radiusElInput").value = parseInt(evt.target.getWidth() / 2); // радиус
+            } else {
+                document.getElementById("areaElInput").value = parseInt(3.14 * (evt.target.getWidth() * evt.target.getHeight())); // площадь элипса
+            }
+        } else if (position.drawingType == "triangle") {
+            document.getElementById("heightElInput").value = parseInt(evt.target.getHeight());
+            document.getElementById("widthElInput").value = parseInt(evt.target.getWidth());
+            document.getElementById("areaElInput").value = parseInt((evt.target.getWidth() / 2) * evt.target.getHeight()); // площадь треугольника
         }
-    },
-    StartDrawingWithMouse: function () { // создание полотна
+    }, StartDrawingWithMouse: function () { // создание полотна
         if (!position.isCursorOnEl && !position.isSelectionMode) {
             position.isStartDrawingWithMouse = true;
         }
-    },
-    StopDrawingWithMouse: function () {
+    }, StopDrawingWithMouse: function () {
         if (position.isStartDrawingWithMouse) {
             position.isStartDrawingWithMouse = false;
             if (position.drawingType == "rect") {
                 var rect = new fabric.Rect({
                     id: position.i++,
-                    type: "rect",
                     left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
                     top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY,
                     fill: 'red',
                     width: Math.abs(position.firstClickPositionX - position.lastClickPositionX),
                     height: Math.abs(position.firstClickPositionY - position.lastClickPositionY),
-                    scaleY: 1,
-                    scaleX: 1
                 });
                 canvas.add(rect);
             } else if (position.drawingType == "circle") {
                 var circle = new fabric.Circle({
                     id: position.i++,
-                    type: "rect",
                     radius: Math.abs(position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX - position.lastClickPositionX : position.lastClickPositionX - position.firstClickPositionX) / 2,
                     fill: 'red',
                     left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
                     top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY,
-                    scaleY: 1,
-                    scaleX: 1
                 });
                 canvas.add(circle);
             } else if (position.drawingType == "triangle") {
                 var triangle = new fabric.Triangle({
                     id: position.i++,
-                    type: "triangle",
                     left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
                     top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY,
                     fill: 'red',
                     width: Math.abs(position.firstClickPositionX - position.lastClickPositionX),
                     height: Math.abs(position.firstClickPositionY - position.lastClickPositionY),
-                    scaleY: 1,
-                    scaleX: 1
                 });
                 canvas.add(triangle);
             }
         }
-    },
-    // создание полотна
-    // удалить полотно
-    RemoveSelect: function () {
+    }, RemoveSelect: function () { // удалить выбранный эелмент
         var activeObject = canvas.getActiveObject(),
             activeGroup = canvas.getActiveGroup();
         if (activeObject) {
@@ -226,9 +224,7 @@ var position = {
                 });
             }
         }
-    },
-    // удалить полотно
-    Group: function () { // группы: создать
+    }, Group: function () { // группы: создать
         var activegroup = canvas.getActiveGroup();
         var objectsInGroup = activegroup.getObjects();
         activegroup.clone(function (newgroup) {
@@ -238,21 +234,19 @@ var position = {
             });
             canvas.add(newgroup);
         });
-    },
-    Ungroup: function () { // группы: удалить
+    }, Ungroup: function () { // группы: удалить
         var activeObject = canvas.getActiveObject();
         if (activeObject.type == "group") {
             var items = activeObject._objects;
             activeObject._restoreObjectsState();
             canvas.remove(activeObject);
-            for (var i = 2; i < items.length; i++) {
+            for (var i = 0; i < items.length; i++) {
                 canvas.add(items[i]);
                 canvas.item(canvas.size() - 1).hasControls = true;
             }
             canvas.renderAll();
         }
-    },
-    BlocksMagnet: function (targ) { // примагничивание блоков
+    }, BlocksMagnet: function (targ) { // примагничивание блоков
         activeObject = canvas.getActiveObject();
         if (targ === activeObject || activeObject.angle != 0 || targ.angle != 0) return;
         if ( // активное лево и таргет право
@@ -280,21 +274,20 @@ var position = {
         ) {
             activeObject.top = targ.top + targ.height
         }
-    },
-    GridDrawing: function () { // проприсовка сетки
-        var grid = 20;
-        for (var i = 0; i < (window.innerWidth  / grid); i++) {
-            canvas.add(new fabric.Line([i * grid, 0, i * grid, window.innerWidth ], { 
-                stroke: '#ccc', 
-                selectable: false,
-    
-            }));
-            canvas.add(new fabric.Line([0, i * grid, window.innerWidth , i * grid], { 
-                stroke: '#ccc', 
-                selectable: false,    
-                
-            }))
-        }
+    }, GridDrawing: function () { // проприсовка сетки
+        // var grid = 20;
+        // for (var i = 0; i < (window.innerWidth / grid); i++) {
+        //     canvas.add(new fabric.Line([i * grid, 0, i * grid, window.innerWidth], {
+        //         stroke: '#ccc',
+        //         selectable: false,
+
+        //     }));
+        //     canvas.add(new fabric.Line([0, i * grid, window.innerWidth, i * grid], {
+        //         stroke: '#ccc',
+        //         selectable: false,
+
+        //     }))
+        // }
     }
 }
 window.onload = function () {
