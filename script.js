@@ -82,12 +82,12 @@ var position = {
             position.drawingType = "triangle";
         };
         heightElInput.oninput = function () {
-            canvas.getActiveObject().setHeight(parseInt(heightElInput.value) - 1);
+            canvas.getActiveObject().setHeight(parseInt(heightElInput.value) );
             canvas.getActiveObject().scaleY = 1
             canvas.renderAll();
         };
         widthElInput.oninput = function () {
-            canvas.getActiveObject().setWidth(parseInt(widthElInput.value) - 1);
+            canvas.getActiveObject().setWidth(parseInt(widthElInput.value) );
             canvas.getActiveObject().scaleX = 1
             canvas.renderAll();
         };
@@ -134,8 +134,8 @@ var position = {
     },SetDataToCanvasMenu: function (evt) { // меню: установка занчений
         var activeObject = canvas.getActiveObject();
         if (activeObject != undefined){
-            document.getElementById("heightElInput").value = parseInt(evt.target.getHeight());
-            document.getElementById("widthElInput").value = parseInt(evt.target.getWidth());
+            document.getElementById("heightElInput").value = parseInt(evt.target.getHeight() - 1 );
+            document.getElementById("widthElInput").value = parseInt(evt.target.getWidth() - 1);
         }
 }, StartDrawingWithMouse: function () { // создание полотна
     if (!position.isCursorOnEl && !position.isSelectionMode) {
@@ -272,24 +272,24 @@ function handler(event) {
 }
 
 
-	fabric.Canvas.prototype._setCornerCursor = function (corner, target) {
-            var style = this.upperCanvasEl.style;
-            if (corner === 'tr'){
-                console.log("aaaa");
-            }
-            // if (corner === 'tr' || corner === 'tl' || corner === 'br' || corner === 'bl') {
-            //     style.cursor = this.defaultCursor;
-            //     console.log("aaaa");
-            // }
-            //  else if (corner === 'mt' || corner === 'mb' ||  corner === 'ml' || corner === 'mr' ){
-            //     style.cursor = 'pointer';
-            //     console.log("sss");
-            // }           
-            // else {
-            //     style.cursor = this.defaultCursor;
-            //     return false;
-    // }
-}
+// 	fabric.Canvas.prototype._setCornerCursor = function (corner, target) {
+//             var style = this.upperCanvasEl.style;
+//             if (corner === 'tr'){
+//                 console.log("aaaa");
+//             }
+//             // if (corner === 'tr' || corner === 'tl' || corner === 'br' || corner === 'bl') {
+//             //     style.cursor = this.defaultCursor;
+//             //     console.log("aaaa");
+//             // }
+//             //  else if (corner === 'mt' || corner === 'mb' ||  corner === 'ml' || corner === 'mr' ){
+//             //     style.cursor = 'pointer';
+//             //     console.log("sss");
+//             // }           
+//             // else {
+//             //     style.cursor = this.defaultCursor;
+//             //     return false;
+//     // }
+// }
 
 
 // JSON.stringify(canvas);
@@ -303,24 +303,25 @@ function handler(event) {
 
 
 function aaa() {
+    setTimeout(function(){
 
+    var time = performance.now();
     var myConvasPosion = myConvas.getBoundingClientRect();
-
     var count = 0;
     for(var i = myConvasPosion.left; i < myConvasPosion.left + myConvasPosion.width; i++){
          for(var j = myConvasPosion.top; j < myConvasPosion.top + myConvasPosion.bottom; j++){
             var c = canvas.getContext('2d');
             var p = c.getImageData(i, j, 1, 1).data;
-            if(p[0] == 236 && p[1] == 205 && p[2] == 174){
+            if(p[0] == 236){
                 count = count + 1;
             }
-         
          }
     }
-   console.log(count);
-    // var c = canvas.getContext('2d');
-    // var p = c.getImageData(10, 30, 1, 1).data;
-    // console.log(p[0], p[1], p[2]);
+    console.log(count);
+    time = performance.now() - time;
+    console.log('Время выполнения = ', time);
+}, 1);
+
 }
 
 
