@@ -176,9 +176,12 @@ var position = {
     var activeObject = canvas.getActiveObject(),
         activeGroup = canvas.getActiveGroup();
     if (activeObject) {
+                var aaa = activeObject.getBoundingRect();
+        console.log(aaa);
         if (confirm('Are you sure?')) {
             canvas.remove(activeObject);
         }
+
     }
     else if (activeGroup) {
         if (confirm('Are you sure?')) {
@@ -267,6 +270,28 @@ function handler(event) {
     document.getElementById("cursor").style.top = event.pageY + "px";
     document.getElementById("cursor").style.left = event.pageX + "px";
 }
+
+
+	fabric.Canvas.prototype._setCornerCursor = function (corner, target) {
+            var style = this.upperCanvasEl.style;
+            if (corner === 'tr'){
+                console.log("aaaa");
+            }
+            // if (corner === 'tr' || corner === 'tl' || corner === 'br' || corner === 'bl') {
+            //     style.cursor = this.defaultCursor;
+            //     console.log("aaaa");
+            // }
+            //  else if (corner === 'mt' || corner === 'mb' ||  corner === 'ml' || corner === 'mr' ){
+            //     style.cursor = 'pointer';
+            //     console.log("sss");
+            // }           
+            // else {
+            //     style.cursor = this.defaultCursor;
+            //     return false;
+    // }
+}
+
+
 // JSON.stringify(canvas);
 // canvas.loadFromJSON(json, canvas.renderAll())
 
@@ -277,13 +302,32 @@ function handler(event) {
 
 
 
+function aaa() {
+
+    var myConvasPosion = myConvas.getBoundingClientRect();
+
+    var count = 0;
+    for(var i = myConvasPosion.left; i < myConvasPosion.left + myConvasPosion.width; i++){
+         for(var j = myConvasPosion.top; j < myConvasPosion.top + myConvasPosion.bottom; j++){
+            var c = canvas.getContext('2d');
+            var p = c.getImageData(i, j, 1, 1).data;
+            if(p[0] == 236 && p[1] == 205 && p[2] == 174){
+                count = count + 1;
+            }
+         
+         }
+    }
+   console.log(count);
+    // var c = canvas.getContext('2d');
+    // var p = c.getImageData(10, 30, 1, 1).data;
+    // console.log(p[0], p[1], p[2]);
+}
 
 
 
 
 
-
- document.body.style.cursor = "url(arrow.png)";
+//  document.body.style.cursor = "url(arrow.png)";
 // canvas.defaultCursor = 'url(arrow.png), e-resize';
 
 // // canvas.defaultCursor  = "url('arrow.png'), auto";
