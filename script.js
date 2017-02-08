@@ -1,5 +1,4 @@
-// TODO: рамка
-// TODO: перемычки
+// TODO: группировка перемычек и полотен
 
 var canvas = new fabric.Canvas('myConvas', {
     height: (canvasContainer.offsetWidth / 2 > canvasContainer.offsetHeight / 2) ? 500 : canvasContainer.offsetWidth / 2,
@@ -62,6 +61,7 @@ var position = {
             position.firstClickPositionX = o.e.layerX
             position.firstClickPositionY = o.e.layerY;
             position.StartDrawingWithMouse(o);
+            canvas.bringToFront(canvas.getActiveObject()); // z index активного объекта 
         })
         canvas.on('mouse:up', function (o) {
             position.lastClickPositionX = o.e.layerX
@@ -187,15 +187,18 @@ var position = {
                 canvas.add(rect);
             } else if (position.drawingType == "jumper") {
                 var rect = new fabric.Rect({
+                    name: 'jumper',
                     left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
                     top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY,
                     fill: '#fec180',
                     width: Math.abs(position.firstClickPositionX - position.lastClickPositionX) > 100 ? Math.abs(position.firstClickPositionX - position.lastClickPositionX) : 100,
                     height: Math.abs(position.firstClickPositionY - position.lastClickPositionY) > 100 ? Math.abs(position.firstClickPositionY - position.lastClickPositionY) : 100,
-                    clipTo: function (ctx) {
-                        ctx.arc(100, 100, 200, 0, Math.PI * 2, true);
-                    }
                 });
+                rect.toObject = function () {
+                    return {
+                        name: 'jumper'
+                    };
+                };
                 canvas.add(rect);
             } else if (position.drawingType == "circle") {
                 var circle = new fabric.Circle({
@@ -270,30 +273,70 @@ var position = {
     }, BlocksMagnet: function (targ) { // примагничивание блоков
         activeObject = canvas.getActiveObject();
         if (targ === activeObject || activeObject.angle != 0 || targ.angle != 0) return;
-        if ( // активное лево и таргет право
-            Math.abs(targ.left + targ.width - activeObject.left) <= 10 &&
-            (activeObject.top + activeObject.height) > targ.top &&
-            activeObject.top < (targ.top + targ.height)
-        ) {
-            activeObject.left = targ.left + targ.width
-        } else if ( // активное право и таргет лево
-            Math.abs(activeObject.left + activeObject.width - targ.left) <= 10 &&
-            (activeObject.top + activeObject.height) > targ.top &&
-            activeObject.top < (targ.top + targ.height)
-        ) {
-            activeObject.left = targ.left - activeObject.width
-        } else if ( // активное низ и таргет верх
-            Math.abs((activeObject.top + activeObject.height) - targ.top) <= 10 &&
-            activeObject.left + activeObject.width > targ.left &&
-            activeObject.left < targ.left + targ.width
-        ) {
-            activeObject.top = targ.top - activeObject.height;
-        } else if ( // активное верх и таргет низ
-            Math.abs((activeObject.top) - (targ.top + targ.height)) <= 10 &&
-            activeObject.left + activeObject.width > targ.left &&
-            activeObject.left < targ.left + targ.width
-        ) {
-            activeObject.top = targ.top + targ.height
+
+        var targLeft = targ.getLeft();
+        var targWidth = targ.getWidth();
+        var targTop = targ.getTop();
+        var targHeight = targ.getHeight();
+
+        var activeLeft = activeObject.getLeft();
+        var activeWidth = activeObject.getWidth();
+        var activeTop = activeObject.getTop();
+        var activeHeight = activeObject.getHeight();
+
+        if (activeObject.get('name') != "jumper") { // Если не перемычка 
+            if ( // активное лево и таргет право
+                Math.abs(targLeft + targWidth - activeLeft) <= 10 &&
+                (activeTop + activeHeight) > targTop &&
+                activeTop < (targTop + targHeight)
+            ) {
+                activeObject.left = targLeft + targWidth
+            } else if ( // активное право и таргет лево
+                Math.abs(activeLeft + activeWidth - targLeft) <= 10 &&
+                (activeTop + activeHeight) > targTop &&
+                activeTop < (targTop + targHeight)
+            ) {
+                activeObject.left = targLeftt - activeWidth
+            } else if ( // активное низ и таргет верх
+                Math.abs((activeTop + activeHeight) - targTop) <= 10 &&
+                activeLeft + activeWidth > targLeft &&
+                activeLeft < targLeft + targWidth
+            ) {
+                activeObject.top = targTop - activeHeight;
+            } else if ( // активное верх и таргет низ
+                Math.abs((activeTop) - (targTop + targHeight)) <= 10 &&
+                activeLeft + activeWidth > targLeft &&
+                activeLeft < targLeft + targWidth
+            ) {
+                activeObject.top = targTop + targHeight;
+            }
+           
+        } else { // Если перемычка
+            if ( // активное лево и таргет право
+                Math.abs(targLeft - activeLeft) <= 30 &&
+                Math.abs(targTop - activeTop) <= 30
+            ) {
+                activeObject.left = targLeft;
+                activeObject.top = targTop;
+            } else if ( // активное право и таргет лево
+                Math.abs((targLeft + targWidth) - (activeLeft + activeWidth)) <= 30 &&
+                Math.abs(targTop - activeTop) <= 30
+            ) {
+                activeObject.left = ((targLeft + targWidth)  - activeWidth);
+                activeObject.top = targTop;
+            } else if ( // активное лево низ и таргет право низ
+                Math.abs((targLeft + targWidth) - (activeLeft + activeWidth)) <= 30 &&
+                Math.abs((targTop + targHeight) - (activeTop + activeHeight)) <= 30
+            ) {
+                activeObject.left = ((targLeft + targWidth)  - activeWidth);
+                activeObject.top = (targHeight + targTop) - activeHeight;
+            } else if ( // активное право низ и таргет лево низ
+                Math.abs(targLeft - activeLeft) <= 30 &&
+                Math.abs((targTop + targHeight) - (activeTop + activeHeight)) <= 30
+            ) {
+                activeObject.left = targLeft;
+                activeObject.top = (targHeight + targTop) - activeHeight;
+            }
         }
     }, GridDrawing: function () { // проприсовка сетки
         // var grid = 20;
