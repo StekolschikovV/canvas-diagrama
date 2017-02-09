@@ -1,1 +1,46 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><div class="container"><div id="canvasContainer" class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><canvas id="myConvas"></canvas><div id="infoBlock"><div>Площадь:<span id="areaInfoFild"></span></div></div></div></div><div id="convasContextMenu"><div id="selectOn">Режим выбора</div><div id="selectOf">Режим создания</div><div id="setTypeRect">Тип: прямоугольник</div><div id="setTypeCircle">Тип: оружность</div><div id="setTypeTriangle">Тип: треугольник</div><div id="setTypeJumper">Тип: перемычка</div></div><div id="convasElContextMenu"><div id="group">Группировать</div><div id="ungroup">Разгруппировать</div><div id="heightEl">Высота:<input id="heightElInput" size="2"></div><div id="widthEl">Ширина:<input id="widthElInput" size="2"></div><div id="remove">Удалить</div></div><div id="cursor"></div><link href="./style.css" rel="stylesheet"><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"><script src="./fabric.min.js"></script><script src="./script.js"></script><script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="container">
+    <div id="canvasContainer" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <canvas id="myConvas"></canvas>
+        <div id="infoBlock">
+            <div>Area: ~<span id="areaInfoFild"></span></div>
+        </div>
+    </div>
+</div>
+<div id="convasContextMenu">
+    <div id="mode">Mode
+        <div id="selectOn">Selection mode</div>
+        <div id="selectOf">Creation mode</div>
+    </div>
+    <div id="type">Type
+        <div id="setTypeRect">Rect</div>
+        <div id="setTypeCircle">Circle</div>
+        <div id="setTypeTriangle">Triangle</div>
+    </div>
+    <div id="typeJumper">Type jumper
+        <div id="setTypeJumperRect">Rect</div>
+        <div id="setTypeJumperCircle">Circle</div>
+        <div id="setTypeJumperTriangle">Triangle</div>
+    </div>
+</div>
+<div id="convasElContextMenu">
+    <div id="group">Group</div>
+    <div id="ungroup">Ungroup</div>
+    <div id="heightEl">Height:<input id="heightElInput" size="2"></div>
+    <div id="widthEl">Width:<input id="widthElInput" size="2"></div>
+    <div id="remove">Delete</div>
+</div>
+<div id="cursor"></div>
+<div id="snackbar">Some text some message..</div>
+<link href="./style.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<script src="./fabric.min.js"></script>
+<script src="./script.js"></script>
+</body>
+</html>

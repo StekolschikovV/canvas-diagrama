@@ -1,4 +1,4 @@
-# TODO: группировка перемычек и полотен
+# DONE: группировка перемычек и полотен
 canvas = new (fabric.Canvas)('myConvas',
   height: if canvasContainer.offsetWidth / 2 > canvasContainer.offsetHeight / 2 then 500 else canvasContainer.offsetWidth / 2
   width: canvasContainer.offsetWidth
@@ -99,13 +99,19 @@ position =
       position.drawingType = 'circle'
       return
 
+
     setTypeTriangle.onclick = ->
       position.drawingType = 'triangle'
       return
 
-    setTypeJumper.onclick = ->
-      position.drawingType = 'jumper'
-      return
+    # УСТАНОВКА ТИПА ПЕРЕМЫЧКА
+    setTypeJumperRect.onclick = ->
+      position.drawingType = 'jumperRect'
+    setTypeJumperCircle.onclick = ->
+      position.drawingType = 'jumperCircle'
+    setTypeJumperTriangle.onclick = ->
+      position.drawingType = 'jumperTriangle'
+    # УСТАНОВКА ТИПА ПЕРЕМЫЧКА
 
     heightElInput.oninput = ->
       canvas.getActiveObject().setHeight parseInt(heightElInput.value)
@@ -224,20 +230,11 @@ position =
     if position.isStartDrawingWithMouse
       position.isStartDrawingWithMouse = false
       position.Contur o, 'delContur'
-      # контур
       if position.drawingType == 'rect'
         el = new (fabric.Rect)(
           left: if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX else position.lastClickPositionX
           top: if position.firstClickPositionY < position.lastClickPositionY then position.firstClickPositionY else position.lastClickPositionY
           fill: '#eccdae'
-          width: if Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) > 100 then Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) else 100
-          height: if Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) > 100 then Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) else 100)
-      else if position.drawingType == 'jumper'
-        el = new (fabric.Rect)(
-          name: 'jumper'
-          left: if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX else position.lastClickPositionX
-          top: if position.firstClickPositionY < position.lastClickPositionY then position.firstClickPositionY else position.lastClickPositionY
-          fill: '#fec180'
           width: if Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) > 100 then Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) else 100
           height: if Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) > 100 then Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) else 100)
       else if position.drawingType == 'circle'
@@ -253,6 +250,31 @@ position =
           fill: '#eccdae'
           width: if Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) > 100 then Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) else 100
           height: if Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) > 100 then Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) else 100)
+# перемычки
+      else if position.drawingType == 'jumperRect'
+        el = new (fabric.Rect)(
+          name: 'jumper'
+          left: if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX else position.lastClickPositionX
+          top: if position.firstClickPositionY < position.lastClickPositionY then position.firstClickPositionY else position.lastClickPositionY
+          fill: '#fec180'
+          width: if Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) > 100 then Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) else 100
+          height: if Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) > 100 then Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) else 100)
+      else if position.drawingType == 'jumperCircle'
+        el = new (fabric.Circle)(
+          name: 'jumper'
+          radius: if Math.abs(if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX - (position.lastClickPositionX) else position.lastClickPositionX - (position.firstClickPositionX)) / 2 < 100 then 100 else Math.abs(if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX - (position.lastClickPositionX) else position.lastClickPositionX - (position.firstClickPositionX)) / 2
+          fill: '#fec180'
+          left: if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX else position.lastClickPositionX
+          top: if position.firstClickPositionY < position.lastClickPositionY then position.firstClickPositionY else position.lastClickPositionY)
+      else if position.drawingType == 'jumperTriangle'
+        el = new (fabric.Triangle)(
+          name: 'jumper'
+          fill: '#fec180'
+          left: if position.firstClickPositionX < position.lastClickPositionX then position.firstClickPositionX else position.lastClickPositionX
+          top: if position.firstClickPositionY < position.lastClickPositionY then position.firstClickPositionY else position.lastClickPositionY
+          width: if Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) > 100 then Math.abs(position.firstClickPositionX - (position.lastClickPositionX)) else 100
+          height: if Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) > 100 then Math.abs(position.firstClickPositionY - (position.lastClickPositionY)) else 100)
+      # перемычки
       canvas.add el
 
   RemoveSelect: ->
@@ -283,7 +305,7 @@ position =
           canvas.remove object
         canvas.add newgroup
     catch error
-      alert 'I can\'t group the one element'
+      position.sayForAUser("I can\'t group the one element")
 # ГРУППИРОВКА
 
 # РАЗГРУППИРОВКА
@@ -302,7 +324,7 @@ position =
           i++
         canvas.renderAll()
     catch error
-      alert 'I can\'t ungroup the one element or the item is not selected!'
+      position.sayForAUser('I can\'t ungroup the one element or the item is not selected!')
 # РАЗГРУППИРОВКА
 
 # ПРИМАГНИЧИВАНИЕ БЛОКОВ
@@ -359,15 +381,16 @@ position =
 #         selectable: false,
 #     }))
 # }
-    return
+#    return
+
+# ПЛОЩАДЬ
   GetAndSetArea: ->
-# площадь
     minLeft = 0
     maxLeft = 0
     minTop = 0
     maxTop = 0
     angle = 0
-
+    count = 0
     StartAgain = ->
       if position.GetAndSetAreaStream == 1
         if minLeft < maxLeft
@@ -375,13 +398,13 @@ position =
           while j < maxTop
             c = canvas.getContext('2d')
             p = c.getImageData(minLeft, j, 1, 1).data
-            if p[0] != '0'
+            if p[0] != 0
+#              console.log(1)
               count = count + 1
             j++
           setTimeout (->
             minLeft++
             StartAgain()
-            return
           ), 0
         else
           document.getElementById('areaInfoFild').textContent = count
@@ -390,13 +413,10 @@ position =
         position.GetAndSetAreaStream = 0
         setTimeout (->
           position.GetAndSetArea()
-          return
         ), 10
-      return
-
     document.getElementById('areaInfoFild').textContent = 'Идет подсчет'
+    # получение минимальных размеров облости просчета
     canvas.forEachObject (obj) ->
-# получение минимальных размеров облости просчета
       if obj.type != 'line'
         if obj.angle != 0
           angle = obj.angle
@@ -416,9 +436,8 @@ position =
           maxTop = obj.top + obj.height
         else if maxTop < obj.top + obj.height
           maxTop = obj.left + obj.width
-      return
+    # если есть поворот любой фигур нужно считать всю диаграмму
     if angle != 0
-# если есть поворот любой фигур нужно считать всю диаграмму
       minLeft = 0
       maxLeft = parseInt(myConvas.style.width)
       maxTop = parseInt(myConvas.style.height)
@@ -427,80 +446,43 @@ position =
     time = performance.now()
     count = 0
     StartAgain()
-    return
-  Contur: (o, command) ->
-    `var canvasObjects`
-    `var myConvasHeight`
-    `var myConvasWidth`
+# ПЛОЩАДЬ
 
+# КОНТУР
+  Contur: (o, command) ->
     delContur = ->
       for obj of canvasObjects
-        `obj = obj`
         if canvasObjects[obj].class == 'contur' or canvasObjects[obj].class == 'contur-right' or canvasObjects[obj].class == 'contur-bottom'
           canvas.remove canvasObjects[obj]
           delContur()
-      return
-
     if command == 'Add'
       myConvasHeight = parseInt(myConvas.style.height)
       myConvasWidth = parseInt(myConvas.style.width)
-      position.DrawingWithMouseLineTop = canvas.add(new (fabric.Line)([
-        0
-        0
-        0
-        myConvasWidth
-      ],
+      position.DrawingWithMouseLineTop = canvas.add(new (fabric.Line)([0, 0, 0, myConvasWidth],
         class: 'contur'
-        strokeDashArray: [
-          5
-          5
-        ]
+        strokeDashArray: [5, 5]
         left: myConvasWidth
         top: o.e.layerY
         stroke: '#b35c00'
         selectable: false
         angle: 90))
-      position.DrawingWithMouseLineLeft = canvas.add(new (fabric.Line)([
-        0
-        0
-        0
-        myConvasHeight
-      ],
+      position.DrawingWithMouseLineLeft = canvas.add(new (fabric.Line)([0, 0, 0, myConvasHeight],
         class: 'contur'
-        strokeDashArray: [
-          5
-          5
-        ]
+        strokeDashArray: [5, 5]
         left: o.e.layerX
         top: 0
         stroke: '#b35c00'
         selectable: false))
-      position.DrawingWithMouseLineLeft = canvas.add(new (fabric.Line)([
-        0
-        0
-        0
-        myConvasHeight
-      ],
+      position.DrawingWithMouseLineLeft = canvas.add(new (fabric.Line)([0, 0, 0, myConvasHeight],
         class: 'contur-right'
-        strokeDashArray: [
-          5
-          5
-        ]
+        strokeDashArray: [5, 5]
         left: 0
         top: 0
         stroke: '#b35c00'
         selectable: false))
-      position.DrawingWithMouseLineLeft = canvas.add(new (fabric.Line)([
-        0
-        0
-        0
-        myConvasWidth
-      ],
+      position.DrawingWithMouseLineLeft = canvas.add(new (fabric.Line)([0, 0, 0, myConvasWidth],
         class: 'contur-bottom'
-        strokeDashArray: [
-          5
-          5
-        ]
+        strokeDashArray: [5, 5]
         left: 0
         top: 0
         stroke: '#b35c00'
@@ -510,7 +492,6 @@ position =
     else if command == 'rightBottomContur'
       canvasObjects = canvas.getObjects()
       for obj of canvasObjects
-        `obj = obj`
         if canvasObjects[obj].class == 'contur-right'
           canvasObjects[obj].set left: o.e.layerX
         if canvasObjects[obj].class == 'contur-bottom'
@@ -524,59 +505,27 @@ position =
     else if command == 'DrawingConturGrid'
       myConvasHeight = parseInt(myConvas.style.height)
       myConvasWidth = parseInt(myConvas.style.width)
-      canvas.add new (fabric.Line)([
-        0
-        0
-        0
-        myConvasHeight
-      ],
-        strokeDashArray: [
-          5
-          5
-        ]
+      canvas.add new (fabric.Line)([0, 0, 0, myConvasWidth],
+        strokeDashArray: [5, 5]
         left: 62
         top: 0
         stroke: '#b35c00'
         selectable: false)
-      canvas.add new (fabric.Line)([
-        0
-        0
-        0
-        myConvasHeight
-      ],
-        strokeDashArray: [
-          5
-          5
-        ]
+      canvas.add new (fabric.Line)([0, 0, 0, myConvasWidth],
+        strokeDashArray: [5, 5]
         left: myConvasWidth - 62
         top: 0
         stroke: '#b35c00'
         selectable: false)
-      canvas.add new (fabric.Line)([
-        0
-        0
-        0
-        myConvasWidth
-      ],
-        strokeDashArray: [
-          5
-          5
-        ]
+      canvas.add new (fabric.Line)([0, 0, 0, myConvasWidth],
+        strokeDashArray: [5, 5]
         left: myConvasWidth
         top: 62
         stroke: '#b35c00'
         selectable: false
         angle: 90)
-      canvas.add new (fabric.Line)([
-        0
-        0
-        0
-        myConvasWidth
-      ],
-        strokeDashArray: [
-          5
-          5
-        ]
+      canvas.add new (fabric.Line)([0, 0, 0, myConvasWidth],
+        strokeDashArray: [5, 5]
         left: myConvasWidth
         top: canvasContainer.offsetHeight - 62
         stroke: '#b35c00'
@@ -584,25 +533,26 @@ position =
         angle: 90)
       canvas.renderAll()
     return
-  Cursor: ->
+# КОНТУР
 
+# КУРСОР
+  Cursor: ->
     handler = (event) ->
       document.getElementById('cursor').style.top = event.pageY + 'px'
       document.getElementById('cursor').style.left = event.pageX + 'px'
       return
-
     cursorBlockHideShow = (event) ->
       if event.type == 'mouseover'
         document.getElementById('cursor').style.opacity = 1
       else if event.type == 'mouseout'
         document.getElementById('cursor').style.opacity = 0
-      return
-
     document.onmousemove = handler
     document.getElementById('convasElContextMenu').onmouseover = document.getElementById('convasElContextMenu').onmouseout = document.getElementById('convasContextMenu').onmouseover = document.getElementById('convasContextMenu').onmouseout = document.getElementById('canvasContainer').onmouseover = document.getElementById('canvasContainer').onmouseout = cursorBlockHideShow
     return
+# КУРСОР
+
+# КРАСНАЯ РАМКА
   RedBorder: (e, type) ->
-# красная рамка при Hover
     if type == 'over'
       if e.target.type == 'rect' or e.target.type == 'circle' or e.target.type == 'triangle' or e.target.type == 'group'
         e.target.set
@@ -619,43 +569,58 @@ position =
             height: e.target.height + 5
       catch err
     canvas.renderAll()
-    return
+# КРАСНАЯ РАМКА
+
+# СООБЩЕНИЕ
+  sayForAUser: (text) ->
+    x = document.getElementById('snackbar')
+    x.innerHTML = text
+    x.className = 'show'
+    setTimeout (->
+      x.className = x.className.replace('show', '')
+    ), 3000
+# СООБЩЕНИЕ
 
 window.onload = ->
   position.Start()
+
+
   canvas.on 'object:modified', (options) ->
-#    # ПРИМАГНИЧИВАНИЕ ПЕРЕМЫЧЕК
-#    # перебор всех объектов
-#    canvas.forEachObject (targ) ->
-#      # получение активного объекта
-#      activeObject = canvas.getActiveObject()
-#      if targ != activeObject and activeObject.angle == 0 and targ.angle == 0 and activeObject.get('name') == 'jumper' and targ.get('type') != 'line'
-#        # получение данных для вычислений
-#        targLeft = targ.getLeft()
-#        targWidth = targ.getWidth()
-#        targTop = targ.getTop()
-#        targHeight = targ.getHeight()
-#        activeLeft = activeObject.getLeft()
-#        activeWidth = activeObject.getWidth()
-#        activeTop = activeObject.getTop()
-#        activeHeight = activeObject.getHeight()
-#        # получения колличества перемычек
-#        jumperCount = 0
-#        canvas.forEachObject (targ) ->
-#          if targ.get('name') == 'jumper'
-#            jumperCount++
-#        # есль перемычка одна
-#        if jumperCount == 1
-#          if Math.abs(targLeft - activeLeft) <= 10 and Math.abs(targTop - activeTop) <= 10
-#            activeObject.left = targLeft
-#            activeObject.width = targWidth - 5
-#            activeObject.top = targTop
-#            activeObject.height = targHeight
-#          else if Math.abs(targLeft - activeLeft) <= 10 and Math.abs(targTop + targHeight - (activeTop + activeHeight)) <= 10
-#            activeObject.left = targLeft
-#            activeObject.width = targWidth - 5
-#            activeObject.top = targTop + targHeight - activeHeight
-#            activeObject.height = targHeight
+# ПРИМАГНИЧИВАНИЕ ПЕРЕМЫЧЕК
+# перебор всех объектов
+    canvas.forEachObject (targ) ->
+# получение активного объекта
+      activeObject = canvas.getActiveObject()
+      if(activeObject != null)
+        if targ != activeObject and activeObject.angle == 0 and targ.angle == 0 and activeObject.get('name') == 'jumper' and targ.get('type') != 'line'
+# получение данных для вычислений
+          targLeft = targ.getLeft()
+          targWidth = targ.getWidth()
+          targTop = targ.getTop()
+          targHeight = targ.getHeight()
+          activeLeft = activeObject.getLeft()
+          activeWidth = activeObject.getWidth()
+          activeTop = activeObject.getTop()
+          activeHeight = activeObject.getHeight()
+          # получения колличества перемычек
+          jumperCount = 0
+          canvas.forEachObject (targ) ->
+            if targ.get('name') == 'jumper'
+              jumperCount++
+          # есль перемычка одна
+          if jumperCount == 1
+            if Math.abs(targLeft - activeLeft) <= 10 and Math.abs(targTop - activeTop) <= 10
+              activeObject.left = targLeft
+              activeObject.width = targWidth - 5
+              activeObject.top = targTop
+              activeObject.height = targHeight
+            else if Math.abs(targLeft - activeLeft) <= 10 and Math.abs(targTop + targHeight - (activeTop + activeHeight)) <= 10
+              activeObject.left = targLeft
+              activeObject.width = targWidth - 5
+              activeObject.top = targTop + targHeight - activeHeight
+              activeObject.height = targHeight
+
+
 
 
 
@@ -725,4 +690,12 @@ window.onload = ->
 
 # ---
 # generated by js2coffee 2.2.0
+
+
+
+
+
+
+
+
 

@@ -95,8 +95,14 @@
       setTypeTriangle.onclick = function() {
         position.drawingType = 'triangle';
       };
-      setTypeJumper.onclick = function() {
-        position.drawingType = 'jumper';
+        setTypeJumperRect.onclick = function () {
+            return position.drawingType = 'jumperRect';
+        };
+        setTypeJumperCircle.onclick = function () {
+            return position.drawingType = 'jumperCircle';
+        };
+        setTypeJumperTriangle.onclick = function () {
+            return position.drawingType = 'jumperTriangle';
       };
       heightElInput.oninput = function() {
         canvas.getActiveObject().setHeight(parseInt(heightElInput.value));
@@ -200,7 +206,22 @@
             width: Math.abs(position.firstClickPositionX - position.lastClickPositionX) > 100 ? Math.abs(position.firstClickPositionX - position.lastClickPositionX) : 100,
             height: Math.abs(position.firstClickPositionY - position.lastClickPositionY) > 100 ? Math.abs(position.firstClickPositionY - position.lastClickPositionY) : 100
           });
-        } else if (position.drawingType === 'jumper') {
+        } else if (position.drawingType === 'circle') {
+            el = new fabric.Circle({
+                radius: Math.abs(position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX - position.lastClickPositionX : position.lastClickPositionX - position.firstClickPositionX) / 2 < 100 ? 100 : Math.abs(position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX - position.lastClickPositionX : position.lastClickPositionX - position.firstClickPositionX) / 2,
+                fill: '#eccdae',
+                left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
+                top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY
+            });
+        } else if (position.drawingType === 'triangle') {
+            el = new fabric.Triangle({
+                left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
+                top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY,
+                fill: '#eccdae',
+                width: Math.abs(position.firstClickPositionX - position.lastClickPositionX) > 100 ? Math.abs(position.firstClickPositionX - position.lastClickPositionX) : 100,
+                height: Math.abs(position.firstClickPositionY - position.lastClickPositionY) > 100 ? Math.abs(position.firstClickPositionY - position.lastClickPositionY) : 100
+            });
+        } else if (position.drawingType === 'jumperRect') {
           el = new fabric.Rect({
             name: 'jumper',
             left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
@@ -209,18 +230,20 @@
             width: Math.abs(position.firstClickPositionX - position.lastClickPositionX) > 100 ? Math.abs(position.firstClickPositionX - position.lastClickPositionX) : 100,
             height: Math.abs(position.firstClickPositionY - position.lastClickPositionY) > 100 ? Math.abs(position.firstClickPositionY - position.lastClickPositionY) : 100
           });
-        } else if (position.drawingType === 'circle') {
+        } else if (position.drawingType === 'jumperCircle') {
           el = new fabric.Circle({
+              name: 'jumper',
             radius: Math.abs(position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX - position.lastClickPositionX : position.lastClickPositionX - position.firstClickPositionX) / 2 < 100 ? 100 : Math.abs(position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX - position.lastClickPositionX : position.lastClickPositionX - position.firstClickPositionX) / 2,
-            fill: '#eccdae',
+              fill: '#fec180',
             left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
             top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY
           });
-        } else if (position.drawingType === 'triangle') {
+        } else if (position.drawingType === 'jumperTriangle') {
           el = new fabric.Triangle({
+              name: 'jumper',
+              fill: '#fec180',
             left: position.firstClickPositionX < position.lastClickPositionX ? position.firstClickPositionX : position.lastClickPositionX,
             top: position.firstClickPositionY < position.lastClickPositionY ? position.firstClickPositionY : position.lastClickPositionY,
-            fill: '#eccdae',
             width: Math.abs(position.firstClickPositionX - position.lastClickPositionX) > 100 ? Math.abs(position.firstClickPositionX - position.lastClickPositionX) : 100,
             height: Math.abs(position.firstClickPositionY - position.lastClickPositionY) > 100 ? Math.abs(position.firstClickPositionY - position.lastClickPositionY) : 100
           });
@@ -261,7 +284,7 @@
         });
       } catch (_error) {
         error = _error;
-        return alert('I can\'t group the one element');
+          return position.sayForAUser("I can\'t group the one element");
       }
     },
     Ungroup: function() {
@@ -282,7 +305,7 @@
         }
       } catch (_error) {
         error = _error;
-        return alert('I can\'t ungroup the one element or the item is not selected!');
+          return position.sayForAUser('I can\'t ungroup the one element or the item is not selected!');
       }
     },
     BlocksMagnet: function(targ) {
@@ -335,31 +358,32 @@
       minTop = 0;
       maxTop = 0;
       angle = 0;
+        count = 0;
       StartAgain = function() {
-        var c, count, j, p;
+          var c, j, p;
         if (position.GetAndSetAreaStream === 1) {
           if (minLeft < maxLeft) {
             j = minTop;
             while (j < maxTop) {
               c = canvas.getContext('2d');
               p = c.getImageData(minLeft, j, 1, 1).data;
-              if (p[0] !== '0') {
+                if (p[0] !== 0) {
                 count = count + 1;
               }
               j++;
             }
-            setTimeout((function() {
+              return setTimeout((function () {
               minLeft++;
-              StartAgain();
+                  return StartAgain();
             }), 0);
           } else {
             document.getElementById('areaInfoFild').textContent = count;
-            position.GetAndSetAreaStream--;
+              return position.GetAndSetAreaStream--;
           }
         } else if (position.GetAndSetAreaStream > 1) {
           position.GetAndSetAreaStream = 0;
-          setTimeout((function() {
-            position.GetAndSetArea();
+            return setTimeout((function () {
+                return position.GetAndSetArea();
           }), 10);
         }
       };
@@ -385,9 +409,9 @@
             minTop = obj.top;
           }
           if (maxTop === 0) {
-            maxTop = obj.top + obj.height;
+              return maxTop = obj.top + obj.height;
           } else if (maxTop < obj.top + obj.height) {
-            maxTop = obj.left + obj.width;
+              return maxTop = obj.left + obj.width;
           }
         }
       });
@@ -400,22 +424,22 @@
       position.GetAndSetAreaStream++;
       time = performance.now();
       count = 0;
-      StartAgain();
+        return StartAgain();
     },
     Contur: function(o, command) {
-      var canvasObjects;
-      var myConvasHeight;
-      var myConvasWidth;
       var ObjectsArray, canvasObjects, delContur, myConvasHeight, myConvasWidth, obj;
       delContur = function() {
-        var obj;
+          var obj, _results;
+          _results = [];
         for (obj in canvasObjects) {
-          obj = obj;
           if (canvasObjects[obj]["class"] === 'contur' || canvasObjects[obj]["class"] === 'contur-right' || canvasObjects[obj]["class"] === 'contur-bottom') {
             canvas.remove(canvasObjects[obj]);
-            delContur();
+              _results.push(delContur());
+          } else {
+              _results.push(void 0);
           }
         }
+          return _results;
       };
       if (command === 'Add') {
         myConvasHeight = parseInt(myConvas.style.height);
@@ -458,7 +482,6 @@
       } else if (command === 'rightBottomContur') {
         canvasObjects = canvas.getObjects();
         for (obj in canvasObjects) {
-          obj = obj;
           if (canvasObjects[obj]["class"] === 'contur-right') {
             canvasObjects[obj].set({
               left: o.e.layerX
@@ -476,19 +499,19 @@
         canvas.renderAll();
       } else if (command === 'delContur') {
         canvasObjects = canvas.getObjects();
-        ObjectsArray = new Array;
+          ObjectsArray = [];
         delContur();
       } else if (command === 'DrawingConturGrid') {
         myConvasHeight = parseInt(myConvas.style.height);
         myConvasWidth = parseInt(myConvas.style.width);
-        canvas.add(new fabric.Line([0, 0, 0, myConvasHeight], {
+          canvas.add(new fabric.Line([0, 0, 0, myConvasWidth], {
           strokeDashArray: [5, 5],
           left: 62,
           top: 0,
           stroke: '#b35c00',
           selectable: false
         }));
-        canvas.add(new fabric.Line([0, 0, 0, myConvasHeight], {
+          canvas.add(new fabric.Line([0, 0, 0, myConvasWidth], {
           strokeDashArray: [5, 5],
           left: myConvasWidth - 62,
           top: 0,
@@ -522,9 +545,9 @@
       };
       cursorBlockHideShow = function(event) {
         if (event.type === 'mouseover') {
-          document.getElementById('cursor').style.opacity = 1;
+            return document.getElementById('cursor').style.opacity = 1;
         } else if (event.type === 'mouseout') {
-          document.getElementById('cursor').style.opacity = 0;
+            return document.getElementById('cursor').style.opacity = 0;
         }
       };
       document.onmousemove = handler;
@@ -554,13 +577,58 @@
           err = _error;
         }
       }
-      canvas.renderAll();
+        return canvas.renderAll();
+    },
+      sayForAUser: function (text) {
+          var x;
+          x = document.getElementById('snackbar');
+          x.innerHTML = text;
+          x.className = 'show';
+          return setTimeout((function () {
+              return x.className = x.className.replace('show', '');
+          }), 3000);
     }
   };
 
   window.onload = function() {
     position.Start();
-    return canvas.on('object:modified', function(options) {});
+      return canvas.on('object:modified', function (options) {
+          return canvas.forEachObject(function (targ) {
+              var activeHeight, activeLeft, activeObject, activeTop, activeWidth, jumperCount, targHeight, targLeft, targTop, targWidth;
+              activeObject = canvas.getActiveObject();
+              if (activeObject !== null) {
+                  if (targ !== activeObject && activeObject.angle === 0 && targ.angle === 0 && activeObject.get('name') === 'jumper' && targ.get('type') !== 'line') {
+                      targLeft = targ.getLeft();
+                      targWidth = targ.getWidth();
+                      targTop = targ.getTop();
+                      targHeight = targ.getHeight();
+                      activeLeft = activeObject.getLeft();
+                      activeWidth = activeObject.getWidth();
+                      activeTop = activeObject.getTop();
+                      activeHeight = activeObject.getHeight();
+                      jumperCount = 0;
+                      canvas.forEachObject(function (targ) {
+                          if (targ.get('name') === 'jumper') {
+                              return jumperCount++;
+                          }
+                      });
+                      if (jumperCount === 1) {
+                          if (Math.abs(targLeft - activeLeft) <= 10 && Math.abs(targTop - activeTop) <= 10) {
+                              activeObject.left = targLeft;
+                              activeObject.width = targWidth - 5;
+                              activeObject.top = targTop;
+                              return activeObject.height = targHeight;
+                          } else if (Math.abs(targLeft - activeLeft) <= 10 && Math.abs(targTop + targHeight - (activeTop + activeHeight)) <= 10) {
+                              activeObject.left = targLeft;
+                              activeObject.width = targWidth - 5;
+                              activeObject.top = targTop + targHeight - activeHeight;
+                              return activeObject.height = targHeight;
+                          }
+                      }
+                  }
+              }
+          });
+      });
   };
 
 }).call(this);
